@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_violation_report_wizard_form" model="ir.ui.view">
+        <field name="name">hr.violation.report.wizard.form</field>
+        <field name="model">hr.violation.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Xuat bao cao vi pham cham cong">
+                <sheet>
+                    <group string="Khoang thoi gian">
+                        <group>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                        <group>
+                            <field name="report_type" widget="radio"/>
+                        </group>
+                    </group>
+                    <group string="Bo loc">
+                        <group>
+                            <field name="department_ids" widget="many2many_tags"/>
+                            <field name="employee_ids" widget="many2many_tags"/>
+                        </group>
+                        <group>
+                            <field name="violation_type"/>
+                            <field name="severity"/>
+                            <field name="state"/>
+                            <field name="include_waived"/>
+                        </group>
+                    </group>
+                    <group string="Ket qua tim thay" col="3">
+                        <field name="preview_violation_count" string="So vi pham" readonly="1"/>
+                        <field name="preview_employee_count" string="So nhan vien" readonly="1"/>
+                        <field name="preview_total_deduction" string="Tong khau tru (VND)" readonly="1"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_generate_report"
+                            string="Xuat bao cao"
+                            type="object"
+                            class="btn-primary"/>
+                    <button name="action_generate_penalty_summaries"
+                            string="Tao tong hop khau tru"
+                            type="object"
+                            confirm="Thao tac nay se tao ban tong hop khau tru. Tiep tuc?"/>
+                    <button string="Dong" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_violation_report_wizard" model="ir.actions.act_window">
+        <field name="name">Xuat bao cao vi pham</field>
+        <field name="res_model">hr.violation.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>
