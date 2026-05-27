@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_hr_attendance_violation_form" model="ir.ui.view">
+        <field name="name">hr.attendance.violation.form</field>
+        <field name="model">hr.attendance.violation</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="detected,pending_explanation,explained,confirmed,penalized"/>
+                    <button name="action_request_explanation"
+                            string="Yeu cau giai trinh"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state != 'detected'"
+                            groups="hr_attendance_control.group_attendance_manager"/>
+                    <button name="action_confirm"
+                            string="Xac nhan vi pham"
+                            type="object"
+                            class="btn-danger"
+                            invisible="state not in ('detected','explained','pending_explanation')"
+                            groups="hr_attendance_control.group_attendance_manager"
+                            confirm="Ban co chac muon xac nhan vi pham nay?"/>
+                    <button name="action_waive"
+                            string="Bo qua vi pham"
+                            type="object"
+                            invisible="state not in ('detected','explained','pending_explanation')"
+                            groups="hr_attendance_control.group_attendance_manager"
+                            confirm="Bo qua vi pham nay se khong tru luong?"/>
+                </header>
+                <sheet>
+                    <div class="alert alert-warning" invisible="not is_escalated">
+                        Vi pham nay da bi leo thang muc do tu dong.
+                    </div>
+                    <group>
+                        <group string="Thong tin vi pham">
+                            <field name="employee_id" readonly="1"/>
+                            <field name="date" readonly="1"/>
+                            <field name="violation_type" readonly="1"/>
+                            <field name="deviation_minutes" string="So phut" readonly="1"/>
+                            <field name="attendance_id" readonly="1"/>
+                        </group>
+                        <group string="Muc do va Hinh phat">
+                            <field name="severity" readonly="1"/>
+                            <field name="penalty_points" readonly="1"/>
+                            <field name="penalty_amount" string="Tien phat (VND)"
+                                   readonly="state in ('confirmed','penalized','waived')"/>
+                            <field name="rule_id" readonly="1"/>
+                            <field name="is_escalated" readonly="1"/>
+                            <field name="monthly_same_type_count"
+                                   string="Vi pham cung loai thang nay" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Giai trinh" name="explanation">
+                            <field name="explanation_id" nolabel="1">
+                                <list>
+                                    <field name="explanation_text" string="Noi dung"/>
+                                    <field name="state"/>
+                                    <field name="deadline"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_hr_attendance_violation_list" model="ir.ui.view">
+        <field name="name">hr.attendance.violation.list</field>
+        <field name="model">hr.attendance.violation</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="severity == 'major' and state not in ('waived','penalized')"
+                  decoration-warning="severity == 'moderate' and state not in ('waived','penalized')"
+                  decoration-muted="state in ('waived','penalized')">
+                <field name="employee_id"/>
+                <field name="date"/>
+                <field name="violation_type"/>
+                <field name="deviation_minutes" string="Phut vi pham"/>
+                <field name="severity"/>
+                <field name="state"/>
+                <field name="penalty_amount" string="Tien phat (VND)"/>
+                <field name="penalty_points"/>
+                <field name="is_escalated" widget="boolean" string="Leo thang"/>
+                <button name="action_confirm" type="object" icon="fa-check"
+                        invisible="state not in ('detected','explained','pending_explanation')"
+                        groups="hr_attendance_control.group_attendance_manager"/>
+                <button name="action_waive" type="object" icon="fa-times"
+                        invisible="state not in ('detected','explained','pending_explanation')"
+                        groups="hr_attendance_control.group_attendance_manager"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_hr_attendance_violation_graph" model="ir.ui.view">
+        <field name="name">hr.attendance.violation.graph</field>
+        <field name="model">hr.attendance.violation</field>
+        <field name="arch" type="xml">
+            <graph type="bar">
+                <field name="employee_id" type="row"/>
+                <field name="penalty_amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_hr_attendance_violation_pivot" model="ir.ui.view">
+        <field name="name">hr.attendance.violation.pivot</field>
+        <field name="model">hr.attendance.violation</field>
+        <field name="arch" type="xml">
+            <pivot>
+                <field name="employee_id" type="row"/>
+                <field name="violation_type" type="col"/>
+                <field name="penalty_amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_hr_attendance_violation" model="ir.actions.act_window">
+        <field name="name">Vi pham cham cong</field>
+        <field name="res_model">hr.attendance.violation</field>
+        <field name="view_mode">list,form,graph,pivot</field>
+    </record>
+
+    <record id="action_hr_attendance_violation_pending" model="ir.actions.act_window">
+        <field name="name">Vi pham cho xu ly</field>
+        <field name="res_model">hr.attendance.violation</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('state','in',['detected','pending_explanation','explained'])]</field>
+    </record>
+
+</odoo>
