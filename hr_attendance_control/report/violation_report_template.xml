@@ -1,1 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
 
+    <!-- Action report -->
+    <record id="action_report_violation_summary" model="ir.actions.report">
+        <field name="name">Báo cáo vi phạm chấm công</field>
+        <field name="model">hr.attendance.violation</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">
+            hr_attendance_control.report_violation_summary_template
+        </field>
+        <field name="report_file">
+            hr_attendance_control.report_violation_summary_template
+        </field>
+        <field name="print_report_name">
+            'Bao_cao_vi_pham_cham_cong_' + (object.date and
+            object.date.strftime('%m_%Y') or '')
+        </field>
+        <field name="binding_model_id"
+               ref="model_hr_attendance_violation"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- QWeb template -->
+    <template id="report_violation_summary_template">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+
+                    <!-- Tiêu đề báo cáo -->
+                    <div class="row mb-4">
+                        <div class="col-12 text-center">
+                            <h2>BÁO CÁO VI PHẠM CHẤM CÔNG</h2>
+                            <p class="text-muted">
+                                Kỳ báo cáo:
+                                <t t-esc="docs[0].date if docs else ''"/>
+                                —
+                                <t t-esc="docs[-1].date if docs else ''"/>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Thống kê tổng quan -->
+                    <div class="row mb-4">
+                        <div class="col-3 text-center border-right">
+                            <h3><t t-esc="len(docs)"/></h3>
+                            <small>Tổng vi phạm</small>
+                        </div>
+                        <div class="col-3 text-center border-right">
+                            <h3>
+                                <t t-esc="len(set(d.employee_id.id for d in docs))"/>
+                            </h3>
+                            <small>Nhân viên vi phạm</small>
+                        </div>
+                        <div class="col-3 text-center border-right">
+                            <h3>
+                                <t t-esc="len([d for d in docs if d.severity == 'major'])"/>
+                            </h3>
+                            <small>Vi phạm nặng</small>
+                        </div>
+                        <div class="col-3 text-center">
+                            <h3>
+                                <t t-esc="'{:,.0f}'.format(sum(d.penalty_amount for d in docs))"/>
+                            </h3>
+                            <small>Tổng khấu trừ (VNĐ)</small>
+                        </div>
+                    </div>
+
+                    <!-- Bảng chi tiết — nhóm theo nhân viên -->
+                    <t t-set="employees"
+                       t-value="list(dict.fromkeys(d.employee_id for d in docs))"/>
+
+                    <t t-foreach="employees" t-as="employee">
+                        <t t-set="emp_violations"
+                           t-value="[d for d in docs if d.employee_id == employee]"/>
+
+                        <h5 class="mt-4">
+                            <t t-esc="employee.name"/>
+                            — <t t-esc="employee.department_id.name or ''"/>
+                        </h5>
+
+                        <table class="table table-sm table-bordered">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Ngày</th>
+                                    <th>Loại vi phạm</th>
+                                    <th>Phút vi phạm</th>
+                                    <th>Mức độ</th>
+                                    <th>Điểm phạt</th>
+                                    <th class="text-right">Tiền phạt (VNĐ)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="emp_violations" t-as="v">
+                                    <tr t-att-class="
+                                        'table-danger' if v.severity == 'major'
+                                        else ('table-warning' if v.severity == 'moderate'
+                                        else '')">
+                                        <td>
+                                            <t t-esc="v.date.strftime('%d/%m/%Y')
+                                                      if v.date else ''"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="dict(v._fields['violation_type'].selection).get(v.violation_type, v.violation_type)"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="'{:.0f}'.format(v.deviation_minutes)"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="dict(v._fields['severity'].selection).get(v.severity, v.severity)"/>
+                                        </td>
+                                        <td><t t-esc="v.penalty_points"/></td>
+                                        <td class="text-right">
+                                            <t t-esc="'{:,.0f}'.format(v.penalty_amount)"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                            <tfoot>
+                                <tr class="font-weight-bold">
+                                    <td colspan="4">Tổng cộng</td>
+                                    <td>
+                                        <t t-esc="sum(v.penalty_points for v in emp_violations)"/>
+                                    </td>
+                                    <td class="text-right">
+                                        <t t-esc="'{:,.0f}'.format(sum(v.penalty_amount for v in emp_violations))"/>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </t>
+
+                    <!-- Chữ ký -->
+                    <div class="row mt-5">
+                        <div class="col-6 text-center">
+                            <p><strong>Người lập báo cáo</strong></p>
+                            <br/><br/>
+                            <p>................................</p>
+                        </div>
+                        <div class="col-6 text-center">
+                            <p><strong>Trưởng phòng Nhân sự</strong></p>
+                            <br/><br/>
+                            <p>................................</p>
+                        </div>
+                    </div>
+
+                </div>
+            </t>
+        </t>
+    </template>
+
+</odoo>
