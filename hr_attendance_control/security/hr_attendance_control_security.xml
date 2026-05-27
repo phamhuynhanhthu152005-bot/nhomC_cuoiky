@@ -1,1 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
 
+    <!-- ═══════════════════════════════════════════════
+         SECURITY GROUPS — 3 cấp
+         Odoo 19: res.groups chỉ còn name, implied_ids, comment
+    ═══════════════════════════════════════════════ -->
+
+    <!-- Cấp 1: User -->
+    <record id="group_attendance_user" model="res.groups">
+        <field name="name">Attendance Control: User</field>
+    </record>
+
+    <!-- Cấp 2: Manager (kế thừa User) -->
+    <record id="group_attendance_manager" model="res.groups">
+        <field name="name">Attendance Control: Manager</field>
+        <field name="implied_ids"
+               eval="[(4, ref('hr_attendance_control.group_attendance_user'))]"/>
+    </record>
+
+    <!-- Cấp 3: Admin (kế thừa Manager) -->
+    <record id="group_attendance_admin" model="res.groups">
+        <field name="name">Attendance Control: Administrator</field>
+        <field name="implied_ids"
+               eval="[(4, ref('hr_attendance_control.group_attendance_manager'))]"/>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════
+         RECORD RULES
+    ═══════════════════════════════════════════════ -->
+
+    <record id="rule_violation_own_employee" model="ir.rule">
+        <field name="name">Violation: Nhân viên chỉ xem của bản thân</field>
+        <field name="model_id" ref="model_hr_attendance_violation"/>
+        <field name="domain_force">
+            [('employee_id.user_id', '=', user.id)]
+        </field>
+        <field name="groups"
+               eval="[(4, ref('hr_attendance_control.group_attendance_user'))]"/>
+        <field name="perm_read">1</field>
+        <field name="perm_write">1</field>
+        <field name="perm_create">0</field>
+        <field name="perm_unlink">0</field>
+    </record>
+
+    <record id="rule_violation_department_manager" model="ir.rule">
+        <field name="name">Violation: Manager xem theo phòng ban</field>
+        <field name="model_id" ref="model_hr_attendance_violation"/>
+        <field name="domain_force">
+            ['|',
+                ('employee_id.department_id.manager_id.user_id', '=', user.id),
+                ('employee_id.parent_id.user_id', '=', user.id)
+            ]
+        </field>
+        <field name="groups"
+               eval="[(4, ref('hr_attendance_control.group_attendance_manager'))]"/>
+        <field name="perm_read">1</field>
+        <field name="perm_write">1</field>
+        <field name="perm_create">1</field>
+        <field name="perm_unlink">0</field>
+    </record>
+
+    <record id="rule_violation_admin_all" model="ir.rule">
+        <field name="name">Violation: Admin xem toàn công ty</field>
+        <field name="model_id" ref="model_hr_attendance_violation"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups"
+               eval="[(4, ref('hr_attendance_control.group_attendance_admin'))]"/>
+        <field name="perm_read">1</field>
+        <field name="perm_write">1</field>
+        <field name="perm_create">1</field>
+        <field name="perm_unlink">1</field>
+    </record>
+
+    <record id="rule_explanation_own" model="ir.rule">
+        <field name="name">Explanation: Chỉ sửa giải trình của mình</field>
+        <field name="model_id" ref="model_hr_attendance_explanation"/>
+        <field name="domain_force">
+            [('employee_id.user_id', '=', user.id)]
+        </field>
+        <field name="groups"
+               eval="[(4, ref('hr_attendance_control.group_attendance_user'))]"/>
+        <field name="perm_read">1</field>
+        <field name="perm_write">1</field>
+        <field name="perm_create">1</field>
+        <field name="perm_unlink">0</field>
+    </record>
+
+    <record id="rule_attendance_rule_admin_only" model="ir.rule">
+        <field name="name">Attendance Rule: Chỉ Admin cấu hình</field>
+        <field name="model_id" ref="model_hr_attendance_rule"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups"
+               eval="[(4, ref('hr_attendance_control.group_attendance_admin'))]"/>
+        <field name="perm_read">1</field>
+        <field name="perm_write">1</field>
+        <field name="perm_create">1</field>
+        <field name="perm_unlink">1</field>
+    </record>
+
+</odoo>
