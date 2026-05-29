@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <menuitem id="menu_custom_recruitment_topcv_root"
+                  name="TopCV Recruitment"
+                  sequence="10"/>
+
+        <menuitem id="menu_custom_recruitment_topcv_sub"
+                  name="Cấu hình TopCV"
+                  parent="menu_custom_recruitment_topcv_root"
+                  sequence="10"/>
+                  
+        </data>
+</odoo>

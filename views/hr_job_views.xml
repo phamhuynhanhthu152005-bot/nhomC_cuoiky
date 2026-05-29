@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="hr_job_form_inherit" model="ir.ui.view">
+        <field name="name">hr.job.form.inherit</field>
+        <field name="model">hr.job</field>
+        <field name="inherit_id" ref="hr.view_hr_job_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//header" position="inside">
+                <button name="action_post_topcv" type="object" string="Post To TopCV" class="btn-primary"/>
+            </xpath>
+
+            <xpath expr="//field[@name='description']" position="after">
+                <field name="required_skills"/>
+                <field name="min_experience"/>
+                <field name="jd_valid"/>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

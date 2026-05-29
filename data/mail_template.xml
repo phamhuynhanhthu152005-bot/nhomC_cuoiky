@@ -1,0 +1,36 @@
+<odoo>
+
+    <record id="email_template_reject"
+            model="mail.template">
+
+        <field name="name">
+            Reject Applicant
+        </field>
+
+        <field name="model_id"
+               ref="hr_recruitment.model_hr_applicant"/>
+
+        <field name="subject">
+            Recruitment Result
+        </field>
+
+        <field name="body_html">
+
+            <![CDATA[
+
+            <p>
+                Xin chào ứng viên,
+            </p>
+
+            <p>
+                Cảm ơn bạn đã ứng tuyển.
+                Tuy nhiên hồ sơ hiện chưa phù hợp.
+            </p>
+
+            ]]>
+
+        </field>
+
+    </record>
+
+</odoo>
