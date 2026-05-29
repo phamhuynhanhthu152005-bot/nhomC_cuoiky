@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- FORM VIEW -->
+    <record id="view_hr_attendance_explanation_form" model="ir.ui.view">
+        <field name="name">hr.attendance.explanation.form</field>
+        <field name="model">hr.attendance.explanation</field>
+        <field name="arch" type="xml">
+            <form string="Giai trinh vi pham cham cong">
+                <header>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,submitted,accepted,rejected"/>
+                    <button name="action_submit"
+                            string="Gui giai trinh"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state != 'draft'"
+                            confirm="Gui giai trinh nay toi manager?"/>
+                    <button name="action_accept"
+                            string="Chap nhan — Huy phat"
+                            type="object"
+                            class="btn-success"
+                            invisible="state != 'submitted'"
+                            groups="hr_attendance_control.group_attendance_manager"
+                            confirm="Chap nhan giai trinh se huy toan bo tien phat. Tiep tuc?"/>
+                    <button name="action_reject"
+                            string="Tu choi — Giu phat"
+                            type="object"
+                            class="btn-danger"
+                            invisible="state != 'submitted'"
+                            groups="hr_attendance_control.group_attendance_manager"
+                            confirm="Vui long nhap ly do tu choi vao o Ghi chu Manager truoc."/>
+                </header>
+                <sheet>
+                    <!-- Thong tin vi pham (chi xem) -->
+                    <group string="Vi pham lien quan">
+                        <group>
+                            <field name="violation_id" readonly="1"/>
+                            <field name="employee_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="deadline" readonly="1" string="Han giai trinh"/>
+                            <field name="submitted_at" readonly="1"
+                                   string="Thoi diem gui"
+                                   invisible="not submitted_at"/>
+                        </group>
+                    </group>
+
+                    <!-- Nhan vien nhap noi dung -->
+                    <group string="Noi dung giai trinh">
+                        <field name="explanation_text"
+                               nolabel="1"
+                               placeholder="Mo ta ro rang ly do vi pham..."
+                               readonly="state not in ('draft',)"
+                               required="1"/>
+                    </group>
+
+                    <!-- Manager review -->
+                    <group string="Phan hoi cua Manager"
+                           invisible="state == 'draft'"
+                           groups="hr_attendance_control.group_attendance_manager">
+                        <field name="manager_note"
+                               nolabel="1"
+                               placeholder="Ghi chu / Ly do tu choi (bat buoc khi tu choi)..."
+                               readonly="state in ('accepted','rejected')"/>
+                        <field name="reviewed_by_id" readonly="1"
+                               invisible="not reviewed_by_id" string="Nguoi duyet"/>
+                        <field name="reviewed_at" readonly="1"
+                               invisible="not reviewed_at" string="Thoi diem duyet"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- LIST VIEW -->
+    <record id="view_hr_attendance_explanation_list" model="ir.ui.view">
+        <field name="name">hr.attendance.explanation.list</field>
+        <field name="model">hr.attendance.explanation</field>
+        <field name="arch" type="xml">
+            <list decoration-success="state == 'accepted'"
+                  decoration-danger="state == 'rejected' or is_overdue"
+                  decoration-warning="state == 'submitted'"
+                  create="false">
+                <field name="violation_id"/>
+                <field name="employee_id"/>
+                <field name="explanation_text" string="Noi dung"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'accepted'"
+                       decoration-danger="state == 'rejected'"
+                       decoration-warning="state == 'submitted'"
+                       decoration-info="state == 'draft'"/>
+                <field name="deadline" string="Han"/>
+                <field name="submitted_at" string="Da gui"/>
+                <field name="is_overdue" widget="boolean" string="Qua han"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- SEARCH VIEW — Odoo 19: khong dung group expand, khong them field thua -->
+    <record id="view_hr_attendance_explanation_search" model="ir.ui.view">
+        <field name="name">hr.attendance.explanation.search</field>
+        <field name="model">hr.attendance.explanation</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="employee_id"/>
+                <field name="violation_id"/>
+                <filter name="submitted" string="Cho duyet"
+                        domain="[('state','=','submitted')]"/>
+                <filter name="accepted" string="Da chap nhan"
+                        domain="[('state','=','accepted')]"/>
+                <filter name="rejected" string="Da tu choi"
+                        domain="[('state','=','rejected')]"/>
+                <filter name="overdue" string="Qua han"
+                        domain="[('is_overdue','=',True)]"/>
+                <separator/>
+                <filter name="group_employee" string="Nhom theo Nhan vien"
+                        context="{'group_by': 'employee_id'}"/>
+                <filter name="group_state" string="Nhom theo Trang thai"
+                        context="{'group_by': 'state'}"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- ACTION: Manager xem giai trinh can duyet -->
+    <record id="action_hr_attendance_explanation_manager" model="ir.actions.act_window">
+        <field name="name">Giai trinh can duyet</field>
+        <field name="res_model">hr.attendance.explanation</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('state', 'in', ['submitted', 'draft'])]</field>
+    </record>
+
+    <!-- ACTION: Nhan vien xem giai trinh cua minh — khong tao moi truc tiep -->
+    <record id="action_hr_attendance_explanation_mine" model="ir.actions.act_window">
+        <field name="name">Giai trinh cua toi</field>
+        <field name="res_model">hr.attendance.explanation</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('employee_id.user_id', '=', uid)]</field>
+        <field name="context">{'create': False}</field>
+    </record>
+
+</odoo>

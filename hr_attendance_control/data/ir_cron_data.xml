@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Cronjob 1: Phát hiện vắng mặt — 05:00 hàng ngày -->
+    <record id="cron_detect_absence" model="ir.cron">
+        <field name="name">Attendance: Phát hiện vắng mặt không phép</field>
+        <field name="model_id" ref="model_hr_attendance_violation"/>
+        <field name="code">model._cron_detect_absence()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active">True</field>
+    </record>
+
+    <!-- Cronjob 2: Tự động confirm vi phạm hết hạn giải trình — mỗi 6 giờ -->
+    <record id="cron_auto_confirm_expired" model="ir.cron">
+        <field name="name">Attendance: Xác nhận vi phạm hết hạn giải trình</field>
+        <field name="model_id" ref="model_hr_attendance_explanation"/>
+        <field name="code">model._cron_auto_confirm_expired()</field>
+        <field name="interval_number">6</field>
+        <field name="interval_type">hours</field>
+        <field name="active">True</field>
+    </record>
+
+    <!-- Cronjob 3: Tạo penalty summary — ngày 1 hàng tháng -->
+    <record id="cron_generate_monthly_summary" model="ir.cron">
+        <field name="name">Attendance: Tạo tổng hợp khấu trừ tháng</field>
+        <field name="model_id" ref="model_hr_attendance_penalty_summary"/>
+        <field name="code">model._cron_generate_monthly_summary()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">months</field>
+        <field name="active">True</field>
+    </record>
+
+</odoo>

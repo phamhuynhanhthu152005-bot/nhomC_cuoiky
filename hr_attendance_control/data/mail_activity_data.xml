@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- Activity type tùy chỉnh cho yêu cầu giải trình -->
+    <record id="activity_violation_explanation" model="mail.activity.type">
+        <field name="name">Giải trình vi phạm chấm công</field>
+        <field name="icon">fa-exclamation-circle</field>
+        <field name="delay_count">2</field>
+        <field name="delay_unit">days</field>
+        <field name="delay_from">current_date</field>
+        <field name="res_model">hr.attendance.violation</field>
+        <field name="category">default</field>
+    </record>
+
+    <!-- Activity type cho cảnh báo thu hồi quá hạn -->
+    <record id="activity_violation_escalation" model="mail.activity.type">
+        <field name="name">Cảnh báo vi phạm leo thang</field>
+        <field name="icon">fa-warning</field>
+        <field name="delay_count">0</field>
+        <field name="delay_unit">days</field>
+        <field name="res_model">hr.attendance.violation</field>
+        <field name="category">default</field>
+    </record>
+
+</odoo>

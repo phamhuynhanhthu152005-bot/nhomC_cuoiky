@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!--
+        Odoo 19: hr.version replaces hr.contract.
+        The form view is hr_contract_template_form_view in hr module.
+        We inherit it to add payroll-specific fields: schedule_pay and struct_id.
+    -->
+    <record id="hr_version_view_form_payroll" model="ir.ui.view">
+        <field name="name">hr.version.form.payroll</field>
+        <field name="model">hr.version</field>
+        <field name="inherit_id" ref="hr.hr_contract_template_form_view"/>
+        <field name="arch" type="xml">
+            <field name="structure_type_id" position="after">
+                <field name="schedule_pay" groups="hr.group_hr_manager"/>
+                <field name="struct_id" groups="hr.group_hr_manager"/>
+            </field>
+        </field>
+    </record>
+</odoo>

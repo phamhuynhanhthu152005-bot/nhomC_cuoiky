@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <record id="rule_late_minor" model="hr.attendance.rule">
+        <field name="name">Di muon nhe (5-15 phut)</field>
+        <field name="violation_type">late</field>
+        <field name="threshold_minutes">5</field>
+        <field name="threshold_minutes_max">15</field>
+        <field name="grace_period_minutes">0</field>
+        <field name="severity">minor</field>
+        <field name="penalty_points">1</field>
+        <field name="penalty_type">percent_daily</field>
+        <field name="penalty_value">0.5</field>
+        <field name="requires_explanation">False</field>
+        <field name="is_active">True</field>
+    </record>
+
+    <record id="rule_late_moderate" model="hr.attendance.rule">
+        <field name="name">Di muon vua (15-30 phut)</field>
+        <field name="violation_type">late</field>
+        <field name="threshold_minutes">15</field>
+        <field name="threshold_minutes_max">30</field>
+        <field name="grace_period_minutes">0</field>
+        <field name="severity">moderate</field>
+        <field name="penalty_points">2</field>
+        <field name="penalty_type">percent_daily</field>
+        <field name="penalty_value">1.0</field>
+        <field name="requires_explanation">True</field>
+        <field name="explanation_deadline_hours">24</field>
+        <field name="is_active">True</field>
+    </record>
+
+    <record id="rule_late_major" model="hr.attendance.rule">
+        <field name="name">Di muon nang (tren 30 phut)</field>
+        <field name="violation_type">late</field>
+        <field name="threshold_minutes">30</field>
+        <field name="grace_period_minutes">0</field>
+        <field name="severity">major</field>
+        <field name="penalty_points">3</field>
+        <field name="penalty_type">percent_daily</field>
+        <field name="penalty_value">2.0</field>
+        <field name="requires_explanation">True</field>
+        <field name="explanation_deadline_hours">48</field>
+        <field name="is_active">True</field>
+    </record>
+
+    <record id="rule_early_minor" model="hr.attendance.rule">
+        <field name="name">Ve som nhe (10-30 phut)</field>
+        <field name="violation_type">early_leave</field>
+        <field name="threshold_minutes">10</field>
+        <field name="threshold_minutes_max">30</field>
+        <field name="grace_period_minutes">5</field>
+        <field name="severity">minor</field>
+        <field name="penalty_points">1</field>
+        <field name="penalty_type">percent_daily</field>
+        <field name="penalty_value">0.5</field>
+        <field name="requires_explanation">False</field>
+        <field name="is_active">True</field>
+    </record>
+
+    <record id="rule_early_major" model="hr.attendance.rule">
+        <field name="name">Ve som nang (tren 30 phut)</field>
+        <field name="violation_type">early_leave</field>
+        <field name="threshold_minutes">30</field>
+        <field name="grace_period_minutes">5</field>
+        <field name="severity">major</field>
+        <field name="penalty_points">3</field>
+        <field name="penalty_type">percent_daily</field>
+        <field name="penalty_value">2.0</field>
+        <field name="requires_explanation">True</field>
+        <field name="explanation_deadline_hours">48</field>
+        <field name="is_active">True</field>
+    </record>
+
+    <record id="rule_absence" model="hr.attendance.rule">
+        <field name="name">Vang mat khong phep</field>
+        <field name="violation_type">absence</field>
+        <field name="threshold_minutes">0</field>
+        <field name="grace_period_minutes">0</field>
+        <field name="severity">major</field>
+        <field name="penalty_points">5</field>
+        <field name="penalty_type">percent_daily</field>
+        <field name="penalty_value">100</field>
+        <field name="requires_explanation">True</field>
+        <field name="explanation_deadline_hours">48</field>
+        <field name="is_active">True</field>
+    </record>
+
+</odoo>

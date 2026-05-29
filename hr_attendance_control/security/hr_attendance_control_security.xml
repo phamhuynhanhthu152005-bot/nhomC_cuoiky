@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- ══════════════════════════════════════════════
+             GROUPS — Phai giu nguyen day du, khong duoc xoa
+             vi ir.model.access.csv tham chieu den cac group nay
+        ══════════════════════════════════════════════ -->
+
+        <record id="group_attendance_user" model="res.groups">
+            <field name="name">Attendance User</field>
+            <field name="category_id" ref="base.module_category_human_resources_attendances"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <record id="group_attendance_manager" model="res.groups">
+            <field name="name">Attendance Manager</field>
+            <field name="category_id" ref="base.module_category_human_resources_attendances"/>
+            <field name="implied_ids" eval="[(4, ref('hr_attendance_control.group_attendance_user'))]"/>
+        </record>
+
+        <record id="group_attendance_admin" model="res.groups">
+            <field name="name">Attendance Admin</field>
+            <field name="category_id" ref="base.module_category_human_resources_attendances"/>
+            <field name="implied_ids" eval="[(4, ref('hr_attendance_control.group_attendance_manager'))]"/>
+        </record>
+
+        <!-- ══════════════════════════════════════════════
+             RECORD RULES — hr.attendance.violation
+        ══════════════════════════════════════════════ -->
+
+        <!-- Nhan vien chi doc vi pham cua chinh minh -->
+        <record id="rule_violation_employee_own" model="ir.rule">
+            <field name="name">Violation: Nhan vien chi xem vi pham cua minh</field>
+            <field name="model_id" ref="model_hr_attendance_violation"/>
+            <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('hr_attendance_control.group_attendance_user'))]"/>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Manager xem va xu ly tat ca vi pham -->
+        <record id="rule_violation_manager_all" model="ir.rule">
+            <field name="name">Violation: Manager toan quyen</field>
+            <field name="model_id" ref="model_hr_attendance_violation"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('hr_attendance_control.group_attendance_manager'))]"/>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- Admin toan quyen vi pham -->
+        <record id="rule_violation_admin_all" model="ir.rule">
+            <field name="name">Violation: Admin toan quyen</field>
+            <field name="model_id" ref="model_hr_attendance_violation"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('hr_attendance_control.group_attendance_admin'))]"/>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- ══════════════════════════════════════════════
+             RECORD RULES — hr.attendance.explanation
+
+             Quan trong: cac rule nay OR voi nhau theo group.
+             Manager thoa man rule_explanation_manager_all
+             nen duoc phep doc/ghi du khong phai employee do.
+        ══════════════════════════════════════════════ -->
+
+        <!-- Nhan vien chi thao tac giai trinh cua chinh minh -->
+        <record id="rule_explanation_employee_own" model="ir.rule">
+            <field name="name">Explanation: Nhan vien chi xem giai trinh cua minh</field>
+            <field name="model_id" ref="model_hr_attendance_explanation"/>
+            <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('hr_attendance_control.group_attendance_user'))]"/>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- Manager duoc phep xem va xu ly TAT CA giai trinh -->
+        <record id="rule_explanation_manager_all" model="ir.rule">
+            <field name="name">Explanation: Manager toan quyen</field>
+            <field name="model_id" ref="model_hr_attendance_explanation"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('hr_attendance_control.group_attendance_manager'))]"/>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- Admin toan quyen giai trinh -->
+        <record id="rule_explanation_admin_all" model="ir.rule">
+            <field name="name">Explanation: Admin toan quyen</field>
+            <field name="model_id" ref="model_hr_attendance_explanation"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('hr_attendance_control.group_attendance_admin'))]"/>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- ══════════════════════════════════════════════
+             RECORD RULES — hr.attendance.penalty.summary
+        ══════════════════════════════════════════════ -->
+
+        <!-- Manager va Admin quan ly ban tong hop -->
+        <record id="rule_penalty_summary_manager" model="ir.rule">
+            <field name="name">Penalty Summary: Manager toan quyen</field>
+            <field name="model_id" ref="model_hr_attendance_penalty_summary"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('hr_attendance_control.group_attendance_manager'))]"/>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+    </data>
+</odoo>
