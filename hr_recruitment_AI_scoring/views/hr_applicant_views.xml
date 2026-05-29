@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_hr_applicant_form_inherit_ai_scoring" model="ir.ui.view">
+        <field name="name">hr.applicant.form.ai.scoring</field>
+        <field name="model">hr.applicant</field>
+        <field name="inherit_id" ref="hr_recruitment.hr_applicant_view_form"/>
+        <field name="arch" type="xml">
+            
+            <xpath expr="//button[@name='archive_applicant']" position="before">
+                <button name="action_score_cv" 
+                        string="AI Score CV" 
+                        type="object" 
+                        class="oe_highlight" 
+                        icon="fa-bolt"
+                        invisible="scoring_state != 'not_scored'"/>
+                <button name="action_score_cv" 
+                        string="Re-Score CV" 
+                        type="object" 
+                        icon="fa-refresh"
+                        invisible="scoring_state == 'not_scored'"/>
+            </xpath>
+
+            <xpath expr="//group" position="after">
+                <div class="alert alert-info" role="alert" style="margin-top: 15px; font-size: 15px;" invisible="scoring_state == 'not_scored'">
+                    <strong>AI Evaluation Score: </strong> 
+                    <field name="cv_score" class="oe_inline font-weight-bold"/> / 100
+                </div>
+                <group string="AI Smart Assessment Insights">
+                    <group>
+                        <field name="scoring_state" widget="radio" options="{'horizontal': true}"/>
+                    </group>
+                    <group>
+                        <field name="ai_analysis_log" placeholder="AI Analysis log will appear after screening..."/>
+                    </group>
+                </group>
+            </xpath>
+            
+        </field>
+    </record>
+
+    <record id="view_hr_applicant_tree_inherit_ai_scoring" model="ir.ui.view">
+        <field name="name">hr.applicant.list.ai.scoring</field>
+        <field name="model">hr.applicant</field>
+        <field name="inherit_id" ref="hr_recruitment.crm_case_tree_view_job"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='stage_id']" position="after">
+                <field name="cv_score" widget="progressbar" string="AI Match %"/>
+                <field name="scoring_state" widget="badge" 
+                       decoration-muted="scoring_state == 'not_scored'"
+                       decoration-danger="scoring_state == 'failed'"
+                       decoration-warning="scoring_state == 'passed'"
+                       decoration-success="scoring_state == 'high_potential'"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
