@@ -21,6 +21,7 @@
         'data/mail_activity_data.xml',
         'data/violation_rule_data.xml',
         'data/ir_cron_data.xml',
+        'views/hr_attendance_explanation_views.xml',
         'views/hr_attendance_rule_views.xml',
         'views/hr_attendance_violation_views.xml',
         'views/hr_attendance_penalty_views.xml',
