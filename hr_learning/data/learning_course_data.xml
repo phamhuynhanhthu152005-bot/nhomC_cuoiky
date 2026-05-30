@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!--
+    ╔══════════════════════════════════════════════════════════════════╗                                                                ║
+    ║  HƯỚNG DẪN ADMIN SAU KHI UPGRADE:                              ║
+    ║  Vào Settings > Technical > Job Positions                       ║
+    ║  → kiểm tra có bao nhiêu record "Business Analyst"             ║
+    ║  → nếu >1: merge về 1 record rồi cập nhật course               ║
+    ╚══════════════════════════════════════════════════════════════════╝
+
+    KHÔNG tạo hr.job records ở đây nữa vì gây duplicate.
+    Courses sẽ được tạo không có job_position_id mặc định.
+    Admin tự gán Job Position đúng sau khi cài.
+
+    Nếu đây là môi trường fresh install (chưa có dữ liệu):
+    → Uncomment phần hr.job bên dưới VÀ xóa toàn bộ hr.job trùng trong HR module.
+    -->
+
+    <!-- ================================================================
+         COURSES – Business Analyst
+         JOB POSITION: Admin phải tự chọn đúng record sau khi cài.
+         Hoặc uncomment <field name="job_position_id"> nếu dùng fresh DB.
+         ================================================================ -->
+    <record id="course_sql_for_ba" model="learning.course">
+        <field name="name">SQL for Business Analyst</field>
+        <field name="provider">Udemy</field>
+        <field name="duration">20.0</field>
+        <field name="description">Học SQL cơ bản và nâng cao dành cho Business Analyst.</field>
+        <!-- Uncomment dòng dưới nếu fresh install, thay ID=1 bằng ID thực của hr.job Business Analyst -->
+        <!-- <field name="job_position_id" ref="custom_learning.job_business_analyst"/> -->
+    </record>
+
+    <record id="course_bpm" model="learning.course">
+        <field name="name">Business Process Modeling</field>
+        <field name="provider">Coursera</field>
+        <field name="duration">15.0</field>
+        <field name="description">Mô hình hóa quy trình nghiệp vụ với BPMN 2.0.</field>
+    </record>
+
+    <record id="course_requirement_eng" model="learning.course">
+        <field name="name">Requirement Engineering</field>
+        <field name="provider">LinkedIn Learning</field>
+        <field name="duration">12.0</field>
+        <field name="description">Thu thập, phân tích và quản lý yêu cầu phần mềm.</field>
+    </record>
+
+    <!-- ================================================================
+         COURSES – Data Analyst
+         ================================================================ -->
+    <record id="course_power_bi" model="learning.course">
+        <field name="name">Power BI for Data Analyst</field>
+        <field name="provider">Microsoft Learn</field>
+        <field name="duration">25.0</field>
+        <field name="description">Xây dựng báo cáo và dashboard với Power BI.</field>
+    </record>
+
+    <record id="course_python_data" model="learning.course">
+        <field name="name">Python for Data Analysis</field>
+        <field name="provider">DataCamp</field>
+        <field name="duration">30.0</field>
+        <field name="description">Phân tích dữ liệu với Pandas, NumPy và Matplotlib.</field>
+    </record>
+
+    <!-- ================================================================
+         COURSES – Project Manager
+         ================================================================ -->
+    <record id="course_pmp" model="learning.course">
+        <field name="name">PMP Fundamentals</field>
+        <field name="provider">PMI</field>
+        <field name="duration">40.0</field>
+        <field name="description">Nền tảng quản lý dự án theo chuẩn PMI/PMBOK.</field>
+    </record>
+
+    <record id="course_agile" model="learning.course">
+        <field name="name">Agile Project Management</field>
+        <field name="provider">Scrum Alliance</field>
+        <field name="duration">20.0</field>
+        <field name="description">Quản lý dự án linh hoạt theo phương pháp Agile/Scrum.</field>
+    </record>
+
+</odoo>
