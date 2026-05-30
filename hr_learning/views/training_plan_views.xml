@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<!--
+=======================================================================
+  TRAINING PLAN VIEWS  –  Odoo 19
+  ① view_training_plan_form_popup  (priority=20) – popup từ Course list
+  ② view_training_plan_form        (priority=10) – full form từ menu
+=======================================================================
+-->
+
+
+<!-- ===================================================================
+     ① POPUP FORM
+     =================================================================== -->
+<record id="view_training_plan_form_popup" model="ir.ui.view">
+    <field name="name">training.plan.form.popup</field>
+    <field name="model">training.plan</field>
+    <field name="priority">20</field>
+    <field name="arch" type="xml">
+        <form string="Create Training Plan">
+        <sheet>
+
+            <!-- BANNER: thông tin tự động điền (readonly) -->
+            <div style="
+                background: linear-gradient(135deg,#0d6efd08 0%,#0d6efd14 100%);
+                border: 1px solid #0d6efd33;
+                border-radius: 8px;
+                padding: 16px 20px;
+                margin-bottom: 20px;
+            ">
+                <div style="
+                    font-size: 11px;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    letter-spacing: .6px;
+                    color: #0d6efd;
+                    margin-bottom: 12px;
+                ">Training Information</div>
+
+                <div style="display:flex; gap:32px; flex-wrap:wrap;">
+                    <div style="flex:1; min-width:140px;">
+                        <div style="font-size:11px; color:#6c757d; margin-bottom:4px;">
+                            Employee
+                        </div>
+                        <field name="employee_id"
+                               readonly="1"
+                               options="{'no_open':True}"/>
+                    </div>
+                    <div style="flex:1; min-width:140px;">
+                        <div style="font-size:11px; color:#6c757d; margin-bottom:4px;">
+                            Job Position
+                        </div>
+                        <field name="job_position_id"
+                               readonly="1"
+                               options="{'no_open':True}"/>
+                    </div>
+                    <div style="flex:1; min-width:180px;">
+                        <div style="font-size:11px; color:#6c757d; margin-bottom:4px;">
+                            Course
+                        </div>
+                        <field name="course_id"
+                               readonly="1"
+                               options="{'no_open':True}"/>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCHEDULE -->
+            <group string="Schedule" col="2">
+                <field name="start_date" required="1"/>
+                <field name="end_date"   required="1"/>
+            </group>
+
+            <!-- TRAINING NOTIFICATION -->
+            <group string="Training Notification">
+                <field name="notification_subject"
+                       placeholder="VD: Thông báo tham gia khóa học SQL for BA"/>
+                <field name="notification_date"/>
+                <field name="notification_content"
+                       nolabel="1"
+                       colspan="2"
+                       placeholder="Nội dung thông báo gửi cho nhân viên..."/>
+            </group>
+
+            <!-- NOTES -->
+            <group string="Notes">
+                <field name="notes"
+                       nolabel="1"
+                       placeholder="Ghi chú nội bộ..."/>
+            </group>
+
+            <!-- Fields ẩn cần cho ORM / compute -->
+            <field name="plan_name" invisible="1"/>
+            <field name="status"    invisible="1"/>
+
+        </sheet>
+        </form>
+    </field>
+</record>
+
+
+<!-- ===================================================================
+     ② FULL FORM
+     =================================================================== -->
+<record id="view_training_plan_form" model="ir.ui.view">
+    <field name="name">training.plan.form</field>
+    <field name="model">training.plan</field>
+    <field name="priority">10</field>
+    <field name="arch" type="xml">
+        <form string="Training Plan">
+
+            <header>
+                <button name="action_set_in_progress"
+                        string="Start Training"
+                        type="object"
+                        class="btn-primary"
+                        invisible="status != 'draft'"/>
+                <button name="action_set_completed"
+                        string="Mark as Completed"
+                        type="object"
+                        class="btn-success"
+                        invisible="status != 'in_progress'"/>
+                <button name="action_reset_draft"
+                        string="Reset to Draft"
+                        type="object"
+                        invisible="status == 'draft'"/>
+                <field name="status"
+                       widget="statusbar"
+                       statusbar_visible="draft,in_progress,completed"/>
+            </header>
+
+            <sheet>
+
+                <div class="oe_title">
+                    <h1>
+                        <field name="plan_name"
+                               readonly="1"
+                               placeholder="Training Plan"/>
+                    </h1>
+                </div>
+
+                <!-- BLOCK 1: Training Plan Information -->
+                <group string="Training Plan Information">
+                    <group>
+                        <field name="employee_id"
+                               options="{'no_create':True,'no_quick_create':True}"
+                               readonly="status != 'draft'"/>
+                        <field name="job_position_id" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="course_id"
+                               domain="[('job_position_id', 'in', [job_position_id, False])]"
+                               options="{'no_create':True,'no_quick_create':True}"
+                               readonly="status != 'draft'"/>
+                    </group>
+                </group>
+
+                <!-- BLOCK 2: Schedule -->
+                <group string="Schedule" col="2">
+                    <field name="start_date" readonly="status == 'completed'"/>
+                    <field name="end_date"   readonly="status == 'completed'"/>
+                </group>
+
+                <!-- BLOCK 3: Training Notification -->
+                <group string="Training Notification">
+                    <group>
+                        <field name="notification_subject"
+                               placeholder="Tiêu đề thông báo gửi nhân viên"
+                               readonly="status == 'completed'"/>
+                        <field name="notification_date"
+                               readonly="status == 'completed'"/>
+                    </group>
+                    <group/>
+                    <field name="notification_content"
+                           nolabel="1"
+                           colspan="2"
+                           placeholder="Nội dung thông báo gửi cho nhân viên..."
+                           readonly="status == 'completed'"/>
+                </group>
+
+                <!-- BLOCK 4: Notes -->
+                <group string="Notes">
+                    <field name="notes"
+                           nolabel="1"
+                           placeholder="Ghi chú nội bộ về kế hoạch đào tạo..."/>
+                </group>
+
+            </sheet>
+
+        </form>
+    </field>
+</record>
+
+
+<!-- ===================================================================
+     LIST VIEW
+     =================================================================== -->
+<record id="view_training_plan_list" model="ir.ui.view">
+    <field name="name">training.plan.list</field>
+    <field name="model">training.plan</field>
+    <field name="arch" type="xml">
+        <list string="Training Plans"
+              decoration-success="status == 'completed'"
+              decoration-info="status == 'in_progress'"
+              decoration-muted="status == 'draft'">
+            <field name="employee_id"       string="Employee"/>
+            <field name="job_position_id"   string="Job Position"/>
+            <field name="course_id"         string="Course"/>
+            <field name="start_date"        string="Start Date"/>
+            <field name="end_date"          string="End Date"/>
+            <field name="notification_date" string="Notification Date"
+                   optional="show"/>
+            <field name="status" widget="badge"/>
+        </list>
+    </field>
+</record>
+
+
+<!-- ===================================================================
+     SEARCH VIEW
+     FIX: Xóa toàn bộ <separator/> – không hợp lệ trong <search> Odoo 19
+     =================================================================== -->
+   <record id="view_training_plan_search" model="ir.ui.view">
+    <field name="name">training.plan.search</field>
+    <field name="model">training.plan</field>
+    <field name="arch" type="xml">
+        <search>
+            <field name="employee_id"/>
+            <field name="course_id"/>
+            <field name="job_position_id"/>
+
+            <filter string="Draft"
+                    name="draft"
+                    domain="[('status','=','draft')]"/>
+
+            <filter string="In Progress"
+                    name="in_progress"
+                    domain="[('status','=','in_progress')]"/>
+
+            <filter string="Completed"
+                    name="completed"
+                    domain="[('status','=','completed')]"/>
+        </search>
+    </field>
+    </record>
+
+
+<!-- ===================================================================
+     WINDOW ACTION
+     =================================================================== -->
+<record id="action_training_plan" model="ir.actions.act_window">
+    <field name="name">Training Plans</field>
+    <field name="res_model">training.plan</field>
+    <field name="view_mode">list,form</field>
+    <field name="search_view_id" ref="view_training_plan_search"/>
+    <field name="views" eval="[
+        (ref('view_training_plan_list'), 'list'),
+        (ref('view_training_plan_form'), 'form'),
+    ]"/>
+    <field name="help" type="html">
+        <p class="o_view_nocontent_smiling_face">
+            Chưa có Training Plan nào.
+        </p>
+        <p>
+            Vào <strong>Job Search</strong> → chọn nhân viên →
+            xem khóa học → nhấn <strong>Create Training Plan</strong>.
+        </p>
+    </field>
+</record>
+
+</odoo>

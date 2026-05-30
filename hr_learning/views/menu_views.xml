@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================================================
+         MENU STRUCTURE
+         FIX: Bỏ web_icon vì không có file icon.png thực sự (file rỗng).
+              web_icon với file rỗng gây lỗi khi load menu trên Odoo 19.
+              Dùng groups="" để không giới hạn nhóm, hiển thị cho tất cả user.
+         Learning
+           ├── Job Search
+           ├── Course Recommendation
+           └── Training Plan
+         ============================================================ -->
+
+    <!-- Top-level menu -->
+    <menuitem
+        id="menu_learning_root"
+        name="Learning"
+        sequence="90"
+    />
+
+    <!-- Job Search -->
+    <menuitem
+        id="menu_job_search"
+        name="Job Search"
+        parent="menu_learning_root"
+        action="action_skill_master"
+        sequence="10"
+    />
+
+    <!-- Course Recommendation -->
+    <menuitem
+        id="menu_course_recommendation"
+        name="Course Recommendation"
+        parent="menu_learning_root"
+        action="action_learning_course"
+        sequence="20"
+    />
+
+    <!-- Training Plan -->
+    <menuitem
+        id="menu_training_plan"
+        name="Training Plan"
+        parent="menu_learning_root"
+        action="action_training_plan"
+        sequence="30"
+    />
+
+</odoo>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================================================
+         SKILL MASTER – Job Search
+         FIX: Bỏ tham chiếu field 'name' không tồn tại trong search view.
+              Thêm field 'name' (computed) vào model để _rec_name hợp lệ.
+              Search view chỉ dùng field thực sự tồn tại trong model.
+         ============================================================ -->
+
+    <!-- List View -->
+    <record id="view_skill_master_list" model="ir.ui.view">
+        <field name="name">skill.master.list</field>
+        <field name="model">skill.master</field>
+        <field name="arch" type="xml">
+            <list string="Job Search">
+                <field name="employee_id" string="Employee"/>
+                <field name="job_position_id" string="Job Position"/>
+                <field name="department_id" string="Department"/>
+                <field name="course_count" string="Courses Available"/>
+                <button
+                    name="action_view_recommended_courses"
+                    string="View Recommended Courses"
+                    type="object"
+                    icon="fa-graduation-cap"
+                    class="btn-primary"
+                />
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_skill_master_form" model="ir.ui.view">
+        <field name="name">skill.master.form</field>
+        <field name="model">skill.master</field>
+        <field name="arch" type="xml">
+            <form string="Job Search">
+                <header>
+                    <button
+                        name="action_view_recommended_courses"
+                        string="View Recommended Courses"
+                        type="object"
+                        class="btn-primary"
+                    />
+                </header>
+                <sheet>
+                    <group>
+                        <group string="Employee Information">
+                            <field name="employee_id"/>
+                            <field name="job_position_id" readonly="1"/>
+                            <field name="department_id" readonly="1"/>
+                            <field name="course_count" readonly="1" string="Courses Available"/>
+                        </group>
+                    </group>
+                    <group string="Notes">
+                        <field name="notes" nolabel="1" placeholder="Additional notes..."/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <!-- FIX: Odoo 19 search view chỉ chấp nhận field có string searchable.
+         Related Many2one field với store=True có thể search được.
+         Bỏ filter domain dùng Many2one != False – thay bằng cú pháp đúng. -->
+    <record id="view_skill_master_search" model="ir.ui.view">
+    <field name="name">skill.master.search</field>
+    <field name="model">skill.master</field>
+    <field name="arch" type="xml">
+        <search>
+            <field name="employee_id"/>
+            <field name="job_position_id"/>
+            <field name="department_id"/>
+        </search>
+    </field>
+    </record>
+
+    <!-- Window Action -->
+    <record id="action_skill_master" model="ir.actions.act_window">
+        <field name="name">Job Search</field>
+        <field name="res_model">skill.master</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_skill_master_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a Job Search entry to get started!
+            </p>
+            <p>
+                Select an employee to see their Job Position and recommended courses.
+            </p>
+        </field>
+    </record>
+
+</odoo>
