@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+
+access_skill,skill,model_skill_master,,1,1,1,1
+access_course,course,model_learning_course,,1,1,1,1
+access_training_plan,training.plan,model_training_plan,,1,1,1,1
