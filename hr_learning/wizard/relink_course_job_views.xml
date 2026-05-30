@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Wizard: Re-link Course → hr.job -->
+    <record id="view_relink_course_job_form" model="ir.ui.view">
+        <field name="name">relink.course.job.wizard.form</field>
+        <field name="model">relink.course.job.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Fix: Re-link Courses → Job Position">
+                <sheet>
+                    <div class="alert alert-warning" role="alert">
+                        <strong>Công cụ sửa lỗi "Danh sách khóa học trống"</strong><br/>
+                        Wizard này phát hiện các courses đang trỏ sai hr.job record
+                        và tự động cập nhật về đúng record mà HR employees đang dùng.
+                    </div>
+                    <group>
+                        <field name="info" readonly="1" nolabel="1"/>
+                    </group>
+                    <notebook>
+                        <page string="Courses cần cập nhật" invisible="not has_issues">
+                            <field name="line_ids" readonly="1">
+                                <list>
+                                    <field name="course_id" string="Course"/>
+                                    <field name="current_job_id" string="Job hiện tại (sai ID)"/>
+                                    <field name="target_job_id" string="Job đúng (employee đang dùng)"/>
+                                    <field name="employee_count" string="Số Employees"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <footer>
+                    <button
+                        name="action_analyze"
+                        string="🔍 Phân tích"
+                        type="object"
+                        class="btn-secondary"
+                    />
+                    <button
+                        name="action_apply"
+                        string="✅ Áp dụng Re-link"
+                        type="object"
+                        class="btn-primary"
+                        invisible="not has_issues"
+                    />
+                    <button string="Đóng" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Server Action để mở wizard từ menu -->
+    <record id="action_relink_course_job" model="ir.actions.act_window">
+        <field name="name">Fix: Re-link Courses → Job Position</field>
+        <field name="res_model">relink.course.job.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Menu: Learning > Tools > Re-link -->
+    <menuitem
+        id="menu_learning_tools"
+        name="Tools"
+        parent="menu_learning_root"
+        sequence="99"
+    />
+    <menuitem
+        id="menu_relink_course_job"
+        name="Fix: Re-link Courses → Job Position"
+        parent="menu_learning_tools"
+        action="action_relink_course_job"
+        sequence="10"
+    />
+
+</odoo>
