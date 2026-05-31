@@ -257,7 +257,7 @@ class HrSalaryRule(models.Model):
 
     def _compute_rule_code(self, localdict):
         try:
-            safe_eval(self.amount_python_compute, localdict, mode="exec", nocopy=True)
+            safe_eval(self.amount_python_compute, localdict, mode="exec")
         except Exception as ex:
             exc_text = "".join(traceback.format_exception(ex))
             raise UserError(
@@ -323,7 +323,7 @@ Here is the error received:
 
     def _satisfy_condition_python(self, localdict):
         try:
-            safe_eval(self.condition_python, localdict, mode="exec", nocopy=True)
+            safe_eval(self.condition_python, localdict, mode="exec")
         except Exception as ex:
             exc_text = "".join(traceback.format_exception(ex))
             raise UserError(
