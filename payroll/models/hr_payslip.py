@@ -282,10 +282,13 @@ class HrPayslip(models.Model):
         for contract in contracts.filtered(
             lambda contract: contract.resource_calendar_id
         ):
+            if not contract.employee_id:
+                continue
+
             day_from = datetime.combine(date_from, time.min)
             day_to = datetime.combine(date_to, time.max)
             day_contract_start = datetime.combine(
-                contract.contract_date_start or contract.date_start, time.min
+            contract.contract_date_start or contract.date_start, time.min
             )
             contract = contract.with_context(
                 employee_id=self.employee_id.id, exclude_public_holidays=True
@@ -356,8 +359,8 @@ class HrPayslip(models.Model):
             "name": _("Normal Working Days paid at 100%"),
             "sequence": 1,
             "code": "WORK100",
-            "number_of_days": work_data[contract.employee_id.id]["days"],
-            "number_of_hours": work_data[contract.employee_id.id]["hours"],
+            "number_of_days": work_data.get(contract.employee_id.id, {}).get("days", 0),
+            "number_of_hours": work_data.get(contract.employee_id.id, {}).get("hours", 0),
             "contract_id": contract.id,
         }
 
