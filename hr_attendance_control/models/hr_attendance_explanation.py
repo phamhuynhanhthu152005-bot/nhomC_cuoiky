@@ -142,7 +142,7 @@ class HrAttendanceExplanation(models.Model):
         if self.employee_id.user_id:
             self.message_post(
                 body='<p>Giai trinh cua ban da duoc <b>chap nhan</b>. Vi pham khong bi tru luong.</p>',
-                partner_ids=[(4, self.employee_id.user_id.partner_id.id)],
+                partner_ids=[self.employee_id.user_id.partner_id.id],
             )
 
     def action_reject(self):
@@ -162,7 +162,7 @@ class HrAttendanceExplanation(models.Model):
                     f'<p><b>Ly do:</b> {self.manager_note}</p>'
                     f'<p>Vi pham se duoc tinh vao khau tru luong thang nay.</p>'
                 ),
-                partner_ids=[(4, self.employee_id.user_id.partner_id.id)],
+                partner_ids=[self.employee_id.user_id.partner_id.id],
             )
 
     @api.model

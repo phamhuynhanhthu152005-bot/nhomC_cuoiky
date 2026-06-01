@@ -256,15 +256,17 @@ class HrAttendancePenaltySummary(models.Model):
                 'name': 'Khau tru vi pham cham cong',
                 'code': 'ATTEND_DEDUCT',
                 'category_id': ded_category.id,
-                'struct_id': struct.id,
                 'sequence': 200,
                 'amount_select': 'fix',
                 'amount_fix': 0.0,
                 'active': True,
             })
+            # Gan rule vao struct (thay the struct_id da bi xoa khoi Odoo 16+)
+            if deduction_rule not in struct.rule_ids:
+                struct.write({'rule_ids': [(4, deduction_rule.id)]})
 
         existing = self.env['hr.payslip.line'].search([
-            ('payslip_id', '=', payslip.id),
+            ('slip_id', '=', payslip.id),
             ('code', '=', 'ATTEND_DEDUCT'),
         ], limit=1)
 
@@ -272,7 +274,7 @@ class HrAttendancePenaltySummary(models.Model):
             existing.write({'amount': -total_deduction, 'total': -total_deduction})
         else:
             self.env['hr.payslip.line'].create({
-                'payslip_id': payslip.id,
+                'slip_id': payslip.id,
                 'name': f'Khau tru vi pham cham cong (thang {self.month:02d}/{self.year})',
                 'code': 'ATTEND_DEDUCT',
                 'salary_rule_id': deduction_rule.id,

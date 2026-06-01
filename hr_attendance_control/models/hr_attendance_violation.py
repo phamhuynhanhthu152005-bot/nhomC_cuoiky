@@ -284,11 +284,6 @@ class HrAttendanceViolation(models.Model):
 
     # ── Mo form giai trinh ───────────────────────────────────────────────
     def action_open_explanation_form(self):
-        """
-        Mo form Giai trinh de nhan vien nhap ly do.
-        Dung self.id (integer that trong DB) thay vi context tu One2many
-        (Odoo 17: One2many truyen NewId ao, khong phai integer that).
-        """
         self.ensure_one()
         existing = self.env['hr.attendance.explanation'].search([
             ('violation_id', '=', self.id)
@@ -315,5 +310,31 @@ class HrAttendanceViolation(models.Model):
             'context': {
                 'default_violation_id': self.id,       # integer that, khong phai NewId
                 'default_employee_id': self.employee_id.id,
+            },
+        }
+
+    def action_open_explanation_review(self):
+        self.ensure_one()
+        explanation = self.env['hr.attendance.explanation'].search([
+            ('violation_id', '=', self.id)
+        ], limit=1)
+
+        if not explanation:
+            raise UserError('Chua co giai trinh nao cho vi pham nay.')
+        if explanation.state != 'submitted':
+            raise UserError(
+                f'Giai trinh dang o trang thai "{explanation.state}". '
+                'Chi co the duyet giai trinh o trang thai "Da gui - Cho review".'
+            )
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Duyet giai trinh vi pham',
+            'res_model': 'hr.explanation.review.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            # Khong co res_id → Odoo tao TransientModel record moi → luon EDIT mode
+            'context': {
+                'default_explanation_id': explanation.id,
             },
         }

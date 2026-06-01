@@ -230,12 +230,6 @@ class HrAttendance(models.Model):
         return 0.0
 
     def _get_employee_wage(self, employee):
-        """
-        Lay wage cua nhan vien.
-        OCA Payroll 19 luu wage truc tiep tren hr.employee:
-          - employee.wage          : luong chinh
-          - employee.contract_wage : luong hop dong (neu khac)
-        """
         wage = 0.0
 
         # Cach 1 (uu tien): employee.wage — field truc tiep tren hr.employee
