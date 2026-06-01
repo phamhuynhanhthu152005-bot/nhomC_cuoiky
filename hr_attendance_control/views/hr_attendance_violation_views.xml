@@ -55,17 +55,7 @@
 
                     <notebook>
                         <page string="Giai trinh" name="explanation">
-                            <!--
-                                KHONG dung One2many inline form o day.
-                                Ly do: Odoo 17 truyen NewId (ao) cho context cua
-                                One2many child, khong phai integer that cua violation.
-                                => violation_id bi null khi tao explanation.
 
-                                Thay bang: button goi Python self.id (luon la int that),
-                                va list chi de xem cac giai trinh hien co.
-                            -->
-
-                            <!-- Button tao moi / mo giai trinh hien co -->
                             <div class="mb-3">
                                 <button name="action_open_explanation_form"
                                         string="Them / Xem giai trinh"
